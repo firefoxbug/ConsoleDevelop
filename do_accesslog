@@ -1,0 +1,31 @@
+#!/bin/bash
+
+LINE=""
+KEY='-&@&'
+#198.23.241.130 - - [15/Mar/2013:11:36:37 +0800] "GET /favicon.ico HTTP/1.1" 404 571 "-" "Mozilla/5.0 (X11; Linux i686) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1180.89 Safari/537.1" -&@&www.firefoxbug.net
+OPENCDN_PIPE_PATH="/usr/local/opencdn/pipe"
+tmp_fifo="${OPENCDN_PIPE_PATH}/access.pipe"
+if [ ! -p "${tmp_fifo}" ]
+then
+	mkfifo "${tmp_fifo}" 
+	service syslog-ng restart
+	service nginx restart
+fi
+
+exec 6<>$tmp_fifo
+NODE_LOGS_PATH="/usr/local/opencdn/node_logs"
+if [ ! -d "${NODE_LOGS_PATH}" ]
+then
+	mkdir -p "${NODE_LOGS_PATH}"
+fi
+
+while :
+do
+	read -u6 LINE
+	WEB_SITE=`echo $LINE | awk -F '-&@&' '{print $2}' | sed 's/\./_/g'`
+	echo `echo $LINE | awk -F '-&@&' '{print $1}'` >> ${NODE_LOGS_PATH}/${WEB_SITE}_access.log
+	#echo `echo $LINE | awk -F '-&@&' '{print $1}'` 
+done
+
+wait
+exec 6>&-

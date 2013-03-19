@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# Function : backup nodes' logs
+# Author   : firefoxbug
+# Time     : 2013/03/14
+
+LOG_DIR="/usr/local/opencdn/node_logs"
+LOG_BACKUP="/usr/local/opencdn/node_logs/backup"
+YEAR=`date +%Y`
+MONTH=`date +%m`
+DAY=`date +%d`
+TEMP_DIR="$LOG_BACKUP/$YEAR/$MONTH/$DAY"
+mkdir -p $TEMP_DIR
+mv $LOG_DIR/*.log $TEMP_DIR/

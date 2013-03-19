@@ -1,0 +1,72 @@
+/usr/local/opencdn/
+├── conf 		(www:www)
+│   └── opencdn.conf
+├── conf_rsync	(www:www)
+│   ├── errorpage
+│   │   └── 500.html
+│   ├── koi-utf
+│   ├── koi-win
+│   ├── mime.types
+│   ├── nginx.conf
+│   ├── proxy_pass.conf
+│   ├── vhost
+│   │   ├── firefoxbug_net.conf
+│   │   ├── ocdn-template.conf
+│   │   └── www_firefoxbug_net.conf
+│   └── win-utf
+├── node_logs
+│   ├── firefoxbug_net_access.log
+│   └── www_firefoxbug_net_access.log
+├── ocdn 	(www:www : web resources)
+├── phpmyadmin (www:www)
+├── pipe
+│   ├── access.pipe
+│   └── sys_info.pipe
+├── sbin
+│   ├── do_accesslog
+│   ├── detect_nodes
+│   ├── read_info
+│   ├── rsync_send
+│   └── syn_node
+
+/var/log/opencdn/
+├── do_accesslog.log
+├── node_health.log
+├── read_info.log
+├── rsync.error
+├── rsync-send.log
+└── syn_node.log
+
+crontable
+*/1 * * * *  /usr/local/opencdn/sbin/syn_node >> /var/log/opencdn/syn_node.log 2>&1
+detect_nodes
+
+opencdn
+|--/etc/init.d/opencdn
+|--/var/run/opencdn.pid
+
+syslog-ng
+|--/etc/syslog-ng/syslog-ng.conf
+
+rsync
+|--/etc/rsyncd.conf
+
+
+
+
+/usr/local/opencdn
+.
+|-- conf
+|   `-- opencdn.conf
+|-- conf_rsync
+|-- node_logs			# 节点日志采集后写入此目录
+|-- ocdn			# Web资源
+|-- pipe			# 管道目录
+|   |-- access.pipe			|--节点access日志文件管道
+|   `-- sys_info.pipe			`--节点系统信息管道
+`-- sbin			# OpenCDN执行文件
+    |-- do_accesslog			|--处理access日志文件程序
+    |-- icmp				|--节点健康状态检测程序
+    |-- read_info			|--节点系统信息读取程序
+    |-- rsync_send			|--本地rsync推送程序
+    `-- syn_node			`--前端触发以及OpenCDN重启系统
